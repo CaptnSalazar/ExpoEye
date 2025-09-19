@@ -1,34 +1,32 @@
-# ExpoEye+ Consolidated Submission
+# ExpoEye+ (Groq Integrated) — Consolidated Root Repo
 
-This repository contains a consolidated, root-level codebase for the ExpoEye+ multi-agent system tailored for the Groq/MachineHack hackathon requirements.
+This repository is the upgraded ExpoEye+ tailored to meet Groq Hackathon scoring: multi-agent architecture, MCP-style payloads, Groq integration, and benchmarking.
 
-Included components (all at repo root):
-- app.py (Streamlit demo UI that runs a local orchestrator in-process)
-- vision_agent.py (FastAPI image analysis agent)
-- context_agent.py (FastAPI context enrichment agent)
-- groq_client.py (wrapper for Groq LLM calls — mock when GROQ_API_KEY=demo)
-- orchestrator.py (FastAPI orchestrator combining agents and calling Groq)
-- benchmark.py (simple latency benchmark)
-- Dockerfile & docker-compose.yml for containerized local testing
-- index.html (landing page)
-- demo_images/ placeholders (not included inside ZIP binary; ensure you add images before running)
+## What changed
+- Real Groq client wrapper (groq_client.py) that uses GROQ_API_KEY and GROQ_ENDPOINT environment variables; falls back to deterministic mock when key is 'demo'.
+- Vision, Context agents (FastAPI) and Orchestrator (FastAPI) calling Groq to generate final advice.
+- Streamlit demo UI (app.py) posts images to orchestrator and displays MCP trace + advice.
+- Dockerfile + docker-compose for local stack bring-up.
+- benchmark.py for simple latency measurement.
 
-## Quick start (demo UI)
-```bash
-pip install -r requirements.txt
-streamlit run app.py
-```
-For full multi-service run (Docker):
-```bash
-docker build -t expoeye+ .
-docker-compose up --build
-# then run benchmark.py
-python benchmark.py
-```
+## Quickstart (local demo)
+1. Install system tesseract (OS-specific)
+2. pip install -r requirements.txt
+3. Start services (option A - simple)
+   - Run vision: `python vision_agent.py`
+   - Run context: `python context_agent.py`
+   - Run orchestrator: `python orchestrator.py`
+   - In a new shell: `streamlit run app.py`
+4. Option B - Docker Compose
+   - docker build -t expoeye .
+   - docker-compose up --build
+5. Run benchmark: `python benchmark.py`
 
-## Notes
-- Tesseract system package must be installed for OCR to work.
-- Groq integration is mockable; set GROQ_API_KEY env var to enable real calls.
-- All services live at repo root as requested.
+## Environment Variables
+- GROQ_API_KEY (set to 'demo' for mock mode)
+- GROQ_ENDPOINT (defaults to https://api.x.ai/v1/chat/completions)
+- VISION_AGENT_URL / CONTEXT_AGENT_URL / ORCH_URL to override defaults
 
-See ARCHITECTURE.png for a visual diagram (included).
+## Submission checklist
+- Include video demo link and live deployment if available.
+- Provide commit SHA permalinks for app.py and orchestrator.py when submitting.

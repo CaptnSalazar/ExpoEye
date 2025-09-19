@@ -1,15 +1,3 @@
-# Architecture
+# Architecture Diagram
 
-ExpoEye+ multi-agent architecture (root-level files for quick run).
-
-mermaid code (render in GitHub):
-```mermaid
-flowchart TB
-  User --> Orchestrator[Orchestrator (root)]
-  Orchestrator --> Vision[vision_agent.py]
-  Vision --> Orchestrator
-  Orchestrator --> Context[context_agent.py]
-  Orchestrator --> Groq[groq_client.py]
-  Groq --> Orchestrator
-  Orchestrator --> UserResult[Final Advice]
-```
+See ExpoEyePlus_Architecture.png for visual architecture. Components: Streamlit demo -> Orchestrator -> Vision Agent -> Context Agent -> Groq LLM.

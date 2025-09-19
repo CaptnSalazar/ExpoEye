@@ -1,13 +1,9 @@
-# Core
 streamlit>=1.38.0
 pytesseract>=0.3.10
 Pillow>=10.3.0
 requests>=2.32.3
 numpy>=1.26.4
-
-# FastAPI stack for agents
 fastapi>=0.95.2
 uvicorn>=0.22.0
-
-# Dev
 python-dotenv>=1.0.1
+backoff>=2.2.1

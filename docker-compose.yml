@@ -1,11 +1,11 @@
 version: '3.8'
 services:
-  vision_agent:
+  vision:
     build: .
     command: python vision_agent.py
     ports:
       - '8101:8101'
-  context_agent:
+  context:
     build: .
     command: python context_agent.py
     ports:

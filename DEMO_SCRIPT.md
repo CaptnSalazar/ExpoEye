@@ -1,6 +1,6 @@
-# Demo Script
+# Demo script (2-3 min)
 
-1. Demo UI: `streamlit run app.py` — show upload of badge and voice file.
-2. Full stack via Docker: `docker-compose up --build`
-3. Use curl to POST: `curl -F "image=@demo_images/badge_sample.jpg" http://localhost:8200/submit`
-4. Run `python benchmark.py` to show latency numbers.
+1. Start stack via docker-compose.
+2. Open Streamlit UI: `streamlit run app.py` and upload demo image.
+3. Show MCP trace and Groq response.
+4. Run `python benchmark.py` and present latency stats.
