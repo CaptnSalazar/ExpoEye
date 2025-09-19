@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  vision_agent:
+    build: .
+    command: python vision_agent.py
+    ports:
+      - '8101:8101'
+  context_agent:
+    build: .
+    command: python context_agent.py
+    ports:
+      - '8102:8102'
+  orchestrator:
+    build: .
+    command: python orchestrator.py
+    ports:
+      - '8200:8200'

@@ -1,60 +1,34 @@
-# ExpoEye: AI-Powered Expo Companion 🎭✨
+# ExpoEye+ Consolidated Submission
 
-ExpoEye is your witty, scene-aware guide for navigating chaotic expos.  
-Upload snapshots (badge, map, networking chaos, or tech glitches), and ExpoEye uses OCR + Scene Classification + Grok LLM to provide playful, context-aware suggestions.
+This repository contains a consolidated, root-level codebase for the ExpoEye+ multi-agent system tailored for the Groq/MachineHack hackathon requirements.
 
----
+Included components (all at repo root):
+- app.py (Streamlit demo UI that runs a local orchestrator in-process)
+- vision_agent.py (FastAPI image analysis agent)
+- context_agent.py (FastAPI context enrichment agent)
+- groq_client.py (wrapper for Groq LLM calls — mock when GROQ_API_KEY=demo)
+- orchestrator.py (FastAPI orchestrator combining agents and calling Groq)
+- benchmark.py (simple latency benchmark)
+- Dockerfile & docker-compose.yml for containerized local testing
+- index.html (landing page)
+- demo_images/ placeholders (not included inside ZIP binary; ensure you add images before running)
 
-## 🚀 Features
-- 📸 Upload expo photos (badges, maps, error screens)
-- 🔍 OCR text extraction via Tesseract
-- 🧠 Scene classification (Networking, Navigation, Tech Glitch, Overwhelm)
-- 🤖 Grok-powered witty suggestions (mock mode available)
-- 🎨 Streamlit interactive interface
-
----
-
-## 📂 Project Structure
+## Quick start (demo UI)
+```bash
+pip install -r requirements.txt
+streamlit run app.py
 ```
-ExpoEye/
-├── README.md
-├── app.py
-├── requirements.txt
-├── .gitignore
-├── .streamlit/
-│   └── config.toml
-├── demo_images/
-│   ├── badge_sample.jpg
-│   ├── map_sample.jpg
-│   └── error_screen_sample.jpg
-├── setup_instructions.md
-├── LICENSE
-└── .env.example
+For full multi-service run (Docker):
+```bash
+docker build -t expoeye+ .
+docker-compose up --build
+# then run benchmark.py
+python benchmark.py
 ```
 
----
+## Notes
+- Tesseract system package must be installed for OCR to work.
+- Groq integration is mockable; set GROQ_API_KEY env var to enable real calls.
+- All services live at repo root as requested.
 
-## 🛠️ Setup Instructions
-See [setup_instructions.md](./setup_instructions.md)
-
----
-
-## 📸 Demo Usage
-- Upload a photo of a badge → ExpoEye extracts text + suggests witty networking icebreaker
-- Upload an expo map → ExpoEye helps with navigation humor
-- Upload an error screen → ExpoEye provides “tech glitch survival tips”
-
----
-
-## 🔑 Environment Variables
-Create `.env` file from `.env.example` and configure:
-```
-GROK_API_KEY=your_api_key_here
-```
-
-If left as `demo`, ExpoEye runs in mock mode.
-
----
-
-## 📜 License
-MIT License (see LICENSE file)
+See ARCHITECTURE.png for a visual diagram (included).

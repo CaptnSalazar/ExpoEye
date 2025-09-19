@@ -1,73 +1,71 @@
 import streamlit as st
 import pytesseract
 from PIL import Image
-import numpy as np
-import requests
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
+# Agents and Orchestrator Simulation (Streamlit demo front-end)
+class VisionAgent:
+    def process_image(self, image):
+        text = pytesseract.image_to_string(image)
+        return text.strip()
 
-# Mock Grok API call
-def call_grok_api(prompt, image=None):
-    api_key = os.getenv("GROK_API_KEY", "demo")
-    if api_key == "demo":
-        return f"[MOCK RESPONSE] ExpoEye suggests: {prompt}"
-    # Example of real API (placeholder, replace with actual Grok endpoint)
-    try:
-        response = requests.post(
-            "https://api.grok.ai/v1/chat/completions",
-            headers={"Authorization": f"Bearer {api_key}"},
-            json={"messages": [{"role": "user", "content": prompt}]},
-            timeout=30
-        )
-        if response.status_code == 200:
-            return response.json().get("choices", [{}])[0].get("message", {}).get("content", "[Empty response]")
-        return f"[ERROR] Grok API returned {response.status_code}: {response.text}"
-    except Exception as e:
-        return f"[ERROR] Grok API call failed: {str(e)}"
+class ContextAgent:
+    def enrich_context(self, text):
+        # Simulate MCP integration by calling external API (mock)
+        if "schedule" in text.lower():
+            return "Found reference to event schedule. Fetching from MCP tool... (mock)"
+        return "Context enriched with MCP tool (mock)."
 
-# Simple scene classification (mocked based on brightness)
-def classify_scene(image: Image.Image) -> str:
-    arr = np.array(image.convert("L"))  # grayscale
-    mean_val = arr.mean()
-    if mean_val < 85:
-        return "Networking Chaos"
-    elif mean_val < 170:
-        return "Navigation Puzzle"
-    else:
-        return "Tech Glitch or Overwhelm"
+class VoiceAgent:
+    def process_voice(self, audio_bytes):
+        # Mock voice transcription
+        return "This is a mock transcription of your voice input."
 
-def extract_text(image: Image.Image) -> str:
-    try:
-        return pytesseract.image_to_string(image)
-    except Exception as e:
-        return f"[OCR ERROR] {str(e)}"
+class OrchestratorLocal:
+    def __init__(self):
+        self.vision = VisionAgent()
+        self.context = ContextAgent()
+        self.voice = VoiceAgent()
 
-def main():
-    st.title("ExpoEye 🎭✨ - Your Expo Companion")
-    st.write("Upload expo snapshots (badge, map, glitch, etc.) and let ExpoEye analyze.")
+    def handle_request(self, image=None, audio=None):
+        results = {}
+        if image:
+            vision_output = self.vision.process_image(image)
+            results["ocr_text"] = vision_output
+            results["context"] = self.context.enrich_context(vision_output)
+        if audio:
+            voice_text = self.voice.process_voice(audio)
+            results["voice_text"] = voice_text
+        return results
 
-    uploaded_file = st.file_uploader("Upload an image", type=["jpg", "png", "jpeg"])
+st.set_page_config(page_title='ExpoEye+ Multi-Agent Demo', layout='wide')
+st.title("ExpoEye+ : Multi-Agent Expo Assistant (Demo UI)")
+
+st.write("Upload an image (badge, map, booth) and/or a voice note to get insights. This demo runs a local orchestrator in-process (mock agents). For full multi-service deployment, run the docker-compose stack and use the orchestrator service.")
+
+uploaded_file = st.file_uploader("Upload Image", type=["png", "jpg", "jpeg"])
+uploaded_audio = st.file_uploader("Upload Audio", type=["wav", "mp3", "m4a"])
+
+orch = OrchestratorLocal()
+results = None
+
+if uploaded_file is not None or uploaded_audio is not None:
+    image = None
+    audio = None
     if uploaded_file:
         image = Image.open(uploaded_file)
-        st.image(image, caption="Uploaded Image", use_column_width=True)
+        st.image(image, caption='Uploaded Image', use_column_width=False)
+    if uploaded_audio:
+        audio = uploaded_audio.read()
+    results = orch.handle_request(image=image, audio=audio)
 
-        # OCR
-        text = extract_text(image)
-        st.subheader("Extracted Text")
-        st.code(text if text.strip() else "[No text detected]")
-
-        # Scene classification
-        scene = classify_scene(image)
-        st.subheader("Scene Classification")
-        st.success(scene)
-
-        # Suggestion via Grok/mock
-        prompt = f"Scene: {scene}\nExtracted Text: {text}"
-        response = call_grok_api(prompt)
-        st.subheader("ExpoEye Suggestion")
-        st.info(response)
-
-if __name__ == "__main__":
-    main()
+if results:
+    st.subheader("Results")
+    if "ocr_text" in results:
+        st.markdown("**Extracted Text (OCR):**")
+        st.code(results["ocr_text"])
+    if "context" in results:
+        st.markdown("**Context Agent Response:**")
+        st.write(results["context"])
+    if "voice_text" in results:
+        st.markdown("**Voice Agent Transcription:**")
+        st.write(results["voice_text"])
